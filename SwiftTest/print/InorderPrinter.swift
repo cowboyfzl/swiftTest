@@ -40,8 +40,8 @@ class InorderPrinter : Printer {
     }
     
     func printString() -> String {
-        let string = printStrings(node: tree.root(), nodePrefix: "", leftPrefix: "", rightPrefix: "")
-        string.index(after: String.Index)
+        var string = printStrings(node: tree.root(), nodePrefix: "", leftPrefix: "", rightPrefix: "")
+        string.removeLast(1)
         return string
     }
     
