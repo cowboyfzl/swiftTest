@@ -31,7 +31,8 @@ EmptyClass { ec in
     ec.someFunc = { print("It worked!") }
     return ec
 }.someFunc()
-
+var aa = Person(a: 1)
+var bb = Person(a: 2)
 //workingClass.someFunc() // Outputs: "It worked!"
 
 var tree = BinarySearchTree<Person>()
