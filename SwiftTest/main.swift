@@ -24,20 +24,15 @@ class EmptyClass {
     }
 }
 
-// Now you initialize 'EmptyClass' with a closure that sets
-// whatever variable properties you want to override:
-
-EmptyClass { ec in
-    ec.someFunc = { print("It worked!") }
-    return ec
-}.someFunc()
 var aa = Person(a: 1)
 var bb = Person(a: 2)
-//workingClass.someFunc() // Outputs: "It worked!"
+var cc = Person(a: 3)
+var dd = Person(a: 5)
+var ee = Person(a: 4)
 
 var tree = BinarySearchTree<Int>()
-tree.add(elements: [5, 1, 6, 7, 8, 9, 200, 100])
+tree.add(elements: [7, 4, 9, 2, 5, 8, 11, 12, 1])
 BinaryTrees.println(tree: tree)
-
+tree.inorderTraversal(order: NodeOrder.Ascending)
 
 

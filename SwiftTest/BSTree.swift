@@ -24,6 +24,13 @@ enum NodeCompare : Int {
     case left
 }
 
+enum NodeOrder {
+    /// 升序
+    case Ascending
+    /// 降序
+    case Descending
+}
+
 class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface, BinaryTreeInfo {
     func getRoot() -> AnyObject? {
         return root
@@ -139,5 +146,63 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface, BinaryTreeI
             self.element = element
             self.parent = parent;
         }
+    }
+    
+    
+    
+    /// 前序 （根、左、右）
+    func preorderTraversal() {
+        preorderTraversal(node: root ?? nil)
+    }
+    
+    private func preorderTraversal(node:Node?) {
+        if node == nil {
+            return
+        }
+        
+        print(node?.element ?? " ")
+        preorderTraversal(node: node?.left)
+        preorderTraversal(node: node?.right)
+    }
+    
+    
+    /// 中序遍历 （左、根、右）升序或者降序
+    func inorderTraversal(order:NodeOrder) {
+        switch order {
+        case .Ascending:
+            inorderTraversalAscending(node: root)
+        default:
+            inorderTraversalDescending(node: root)
+        }
+    }
+    
+    private func inorderTraversalAscending(node:Node?) {
+        if node == nil {
+            return
+        }
+        
+        inorderTraversalAscending(node: node?.left)
+        print(node?.element ?? " ")
+        inorderTraversalAscending(node: node?.right)
+    }
+    
+    private func inorderTraversalDescending(node:Node?) {
+        if node == nil {
+            return
+        }
+        
+        inorderTraversalDescending(node: node?.right)
+        print(node?.element ?? " ")
+        inorderTraversalDescending(node: node?.left)
+    }
+    
+    /// 层序遍历（从上往下，从左往右依次访问）
+    func levelOrderTraversal() {
+        var list = Array<E>()
+        
+    }
+    
+    private func levelOrderTraversal(node:Node?) {
+        
     }
 }

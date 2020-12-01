@@ -8,21 +8,21 @@
 
 import Foundation
 /**
-
-   ┌───381────┐
-   │          │
-┌─12─┐     ┌─410─┐
-│    │     │     │
-9  ┌─40─┐ 394 ┌─540─┐
-   │    │     │     │
-  35 ┌─190 ┌─476 ┌─760─┐
-     │     │     │     │
-    146   445   600   800
-    
+ 
+ ┌───381────┐
+ │          │
+ ┌─12─┐     ┌─410─┐
+ │    │     │     │
+ 9  ┌─40─┐ 394 ┌─540─┐
+ │    │     │     │
+ 35 ┌─190 ┌─476 ┌─760─┐
+ │     │     │     │
+ 146   445   600   800
+ 
  *
  */
 class LevelOrderPrinter : Printer {
-
+    
     private static let MIN_SPACE = 1
     private var root:Node?
     private var minX = 0
@@ -418,9 +418,9 @@ class LevelOrderPrinter : Printer {
             var lineNodes = Array<Node>()
             
             for node in rowNodes {
-               _ = addLineNode(curRow: &newRowNodes, nextRow: &lineNodes, parent: node, child: node?.left)
+                addLineNode(curRow: &newRowNodes, nextRow: &lineNodes, parent: node, child: node?.left)
                 newRowNodes.append(node)
-                _ = addLineNode(curRow: &newRowNodes, nextRow: &lineNodes, parent: node, child: node?.right)
+                addLineNode(curRow: &newRowNodes, nextRow: &lineNodes, parent: node, child: node?.right)
             }
             
             newNodes.append(newRowNodes)
@@ -438,9 +438,9 @@ class LevelOrderPrinter : Printer {
         curRow.append(line)
     }
     
-    private func addLineNode(curRow:inout [Node?], nextRow:inout[Node], parent:Node?, child:Node?) -> Node? {
+    private func addLineNode(curRow:inout [Node?], nextRow:inout[Node], parent:Node?, child:Node?) {
         if child == nil {
-            return nil
+            return
         }
         
         var top:Node?
@@ -472,9 +472,6 @@ class LevelOrderPrinter : Printer {
             bottom.y = parent.y + 1
             nextRow.append(bottom)
         }
-        
-        return top
-        
     }
     
     override func printString() -> String {
