@@ -20,11 +20,34 @@ protocol  BinarySearchTreeInterface {
 
 enum NodeCompare : Int {
     case equal = 0
-    case greaterThan
-    case lessThan
+    case right
+    case left
 }
 
-class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface {
+class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface, BinaryTreeInfo {
+    func getRoot() -> AnyObject? {
+        return root
+    }
+    
+    func left(node: AnyObject?) -> AnyObject? {
+        let node = node as? Node;
+        return node?.left
+    }
+    
+    func right(node: AnyObject?) -> AnyObject? {
+        let node = node as? Node;
+        return node?.right
+    }
+    
+    func string(node: AnyObject?) -> String? {
+        let node = node as? Node;
+        if let node = node {
+            return "\(node.element!)"
+        }
+        
+        return ""
+    }
+    
     
     private var _size:Int = 0;
     private var root:Node?
@@ -39,10 +62,10 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface {
     
     func add(elements:[E]) {
         for element in elements {
-            guard let root = self.root else {
+            if root == nil {
                 self.root = Node(element: element, parent: nil)
                 _size += 1;
-                return
+                continue
             }
             
             var node:Node? = root;
@@ -52,19 +75,20 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface {
                 switch compareVale {
                 case .equal:
                     node?.element = element
-                case .greaterThan:
+                    node = nil
+                case .right:
                     if node?.right != nil {
                         node = node?.right;
                     } else {
                         node?.right = Node(element: element, parent: node)
-                        break
+                        node = nil
                     }
-                case .lessThan:
+                case .left:
                     if node?.left != nil {
                         node = node?.left;
                     } else {
                         node?.left = Node(element: element, parent: node)
-                        break
+                        node = nil
                     }
                 }
             }
@@ -92,10 +116,10 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface {
         }
         
         if e1 > e2 {
-            return NodeCompare.greaterThan
+            return NodeCompare.left
         }
         
-        return NodeCompare.lessThan
+        return NodeCompare.right
     }
     
     func remove(element: E) {

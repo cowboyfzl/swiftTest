@@ -22,16 +22,16 @@ class BinaryTrees {
     }
     
     static func println(tree: BinaryTreeInfo) {
-        Swift.print(tree)
+        println(tree: tree, style: nil)
     }
     
     static func print(tree: BinaryTreeInfo, style:PrintStyle) {
-        if tree.root() == nil {return}
+        if tree.getRoot() == nil {return}
         printer(tree: tree, style: style)?.print()
     }
     
-    static func println(tree: BinaryTreeInfo, style:PrintStyle) {
-        if tree.root() == nil {return}
+    static func println(tree: BinaryTreeInfo, style:PrintStyle?) {
+        if tree.getRoot() == nil {return}
         printer(tree: tree, style: style)?.println()
     }
     
@@ -40,11 +40,11 @@ class BinaryTrees {
     }
     
     static func printString(tree:BinaryTreeInfo, style:PrintStyle) -> String? {
-        if tree.root() == nil { return nil }
+        if tree.getRoot() == nil { return nil }
         return printer(tree: tree, style: style)?.printString()
     }
     
-    static func printer(tree: BinaryTreeInfo, style:PrintStyle) -> Printer? {
+    static func printer(tree: BinaryTreeInfo, style:PrintStyle?) -> Printer? {
         if  style == PrintStyle.INORDER {
             return InorderPrinter(tree: tree)
         }

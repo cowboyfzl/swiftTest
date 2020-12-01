@@ -8,22 +8,14 @@
 
 import Foundation
 
-protocol Printer {
-    var tree:BinaryTreeInfo { get set};
-    init(tree:BinaryTreeInfo)
-    
-    /// 抽象方法需要重写
-    func printString() -> String
-    
-    func println()
-    
-    func print()
-}
-
-extension Printer {
+class Printer {
+    var tree:BinaryTreeInfo;
     init(tree:BinaryTreeInfo) {
-        self.init(tree: tree)
         self.tree = tree
+    }
+    
+    func printString() -> String {
+        return ""
     }
     
     func println() {
@@ -34,5 +26,4 @@ extension Printer {
     func print() {
         Swift.print(printString(), separator: "", terminator: "")
     }
-
 }

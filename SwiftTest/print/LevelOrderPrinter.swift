@@ -22,13 +22,15 @@ import Foundation
  *
  */
 class LevelOrderPrinter : Printer {
-    var tree: BinaryTreeInfo
+
     private static let MIN_SPACE = 1
     private var root:Node?
     private var minX = 0
     private var maxWidth = 0
-    required init(tree: BinaryTreeInfo) {
-        self.tree = tree
+    override init(tree: BinaryTreeInfo) {
+        super.init(tree: tree)
+        root = Node(btNode: tree.getRoot(), opetaion: tree)
+        maxWidth = root?.width ?? 0
     }
     
     private class Node : Equatable {
@@ -47,26 +49,28 @@ class LevelOrderPrinter : Printer {
         var width = 0
         
         static func == (lhs: Node, rhs: Node) -> Bool {
-            lhs == rhs
+            return lhs.x == rhs.x && lhs.y == rhs.y && lhs.treeHeight == rhs.treeHeight && lhs.string == rhs.string && lhs.width == rhs.width && lhs.left == rhs.left && lhs.right == rhs.right
         }
         
         private init(string: String?) {
-            var string = string
-            string = string ?? "nil"
+            var string = string;
+            string = string == nil ? "nill" : string
             string = string!.isEmpty ? " " : string
-            width = string?.count ?? 0
+            self.string = string ?? " "
+            width = string!.count
+            self.string = string!
         }
         
         convenience init(str:String?) {
             self.init(string: str)
         }
         
-        convenience init(btNode:AnyObject, opetaion:BinaryTreeInfo) {
-            self.init(string: opetaion.string(node: btNode) as? String)
+        convenience init(btNode:AnyObject?, opetaion:BinaryTreeInfo) {
+            self.init(string: opetaion.string(node: btNode))
             self.btNode = btNode
         }
         
-        private func topLineX() -> Int {
+        fileprivate func topLineX() -> Int {
             var delta = width
             if delta % 2 == 0 {
                 delta -= 1
@@ -87,7 +91,7 @@ class LevelOrderPrinter : Printer {
                 return rightX()
             }
             
-            return right?.topLineX() ?? 0 + 1
+            return (right?.topLineX() ?? 0) + 1
         }
         
         fileprivate func leftBound() -> Int {
@@ -160,7 +164,7 @@ class LevelOrderPrinter : Printer {
             
             var i = 0
             while i < thisHeight && i < rightHeight {
-                let space = right.levelInfo(level: i)?.leftX ?? 0 - (self.levelInfo(level: i)?.rightX ?? 0)
+                let space = (right.levelInfo(level: i)?.leftX ?? 0) - (self.levelInfo(level: i)?.rightX ?? 0)
                 miniSpace = min(miniSpace, space)
                 i += 1
             }
@@ -171,7 +175,7 @@ class LevelOrderPrinter : Printer {
         private func levelInfo(level:Int) -> LevelInfo? {
             guard level >= 0 else { return nil }
             let levelY = y + level
-            if level > treeHeight(node: self) { return nil }
+            if level >= treeHeight(node: self) { return nil }
             
             var list = Array<Node>()
             var queue = Array<Node>()
@@ -241,11 +245,9 @@ class LevelOrderPrinter : Printer {
         if let btNode = btNode {
             node = Node(btNode: btNode, opetaion: tree)
             self.maxWidth = max(maxWidth, node?.width ?? 0)
-            nodes.append(node)
-        } else {
-            nodes.append(node)
         }
         
+        nodes.append(node)
         return node
     }
     
@@ -273,7 +275,6 @@ class LevelOrderPrinter : Printer {
                     }
                     
                     let right = addNode(nodes: &rowNodes,btNode: tree.right(node: node?.btNode))
-                    
                     if let right = right {
                         node?.right = right
                         right.parent = node
@@ -332,6 +333,7 @@ class LevelOrderPrinter : Printer {
             }
             
             rowNodes = rowNodes.filter {$0 != nil}
+            nodes[i] = rowNodes
         }
     }
     
@@ -339,11 +341,14 @@ class LevelOrderPrinter : Printer {
         let rowCount = nodes.count
         if rowCount < 2 { return }
         
-        for i in 0..<rowCount {
+        for i in (0..<rowCount - 2).reversed() {
             let rowNodes = nodes[i]
             for node in rowNodes {
                 let left = node?.left
                 let right = node?.right
+                if left == nil && right == nil {
+                    continue
+                }
                 
                 if let left = left, let right = right {
                     // 让左右节点对称
@@ -392,11 +397,111 @@ class LevelOrderPrinter : Printer {
         }
     }
     
-    func printString() -> String {
+    private func addLineNodes(nodes: inout[[Node?]]) {
+        var newNodes = [[Node?]]()
+        let rowCount = nodes.count
+        if rowCount < 2 {
+            return
+        }
+        
+        minX = root?.x ?? 0
+        for i in 0..<rowCount {
+            let rowNodes = nodes[i]
+            if i == rowCount - 1 {
+                newNodes.append(rowNodes)
+                continue
+            }
+            
+            var newRowNodes = Array<Node?>()
+            
+            
+            var lineNodes = Array<Node>()
+            
+            for node in rowNodes {
+               _ = addLineNode(curRow: &newRowNodes, nextRow: &lineNodes, parent: node, child: node?.left)
+                newRowNodes.append(node)
+                _ = addLineNode(curRow: &newRowNodes, nextRow: &lineNodes, parent: node, child: node?.right)
+            }
+            
+            newNodes.append(newRowNodes)
+            newNodes.append(lineNodes)
+        }
+        
+        nodes.removeAll()
+        nodes.append(contentsOf: newNodes)
+    }
+    
+    private func addXLineNode(curRow:inout [Node?], parent:Node, x:Int) {
+        let line = Node(str: "-")
+        line.y = x
+        line.y = parent.y
+        curRow.append(line)
+    }
+    
+    private func addLineNode(curRow:inout [Node?], nextRow:inout[Node], parent:Node?, child:Node?) -> Node? {
+        if child == nil {
+            return nil
+        }
+        
+        var top:Node?
+        let topX = child?.topLineX() ?? 0
+        if let parent = parent {
+            if child == parent.left {
+                top = Node(str: "┌")
+                curRow.append(top!)
+                
+                for x in (topX + 1)..<parent.x {
+                    addXLineNode(curRow: &curRow, parent: parent, x: x)
+                }
+            } else {
+                for x in parent.rightX()..<topX {
+                    addXLineNode(curRow: &curRow, parent: parent, x: x)
+                }
+                
+                top = Node(str: "┐")
+                curRow.append(top!)
+            }
+            
+            top?.x = topX
+            top?.y = parent.y
+            child?.y = parent.y + 2
+            minX = min(minX, child?.x ?? 0)
+            
+            let bottom = Node(str: "│")
+            bottom.x = topX
+            bottom.y = parent.y + 1
+            nextRow.append(bottom)
+        }
+        
+        return top
+        
+    }
+    
+    override func printString() -> String {
         var nodes = [[Node?]]()
         fillNodes(nodes: &nodes)
         cleanNodes(nodes: &nodes)
         compressNodes(nodes: &nodes)
+        addLineNodes(nodes: &nodes)
+        
+        let rowCount = nodes.count
+        var string = ""
+        for i in 0..<rowCount {
+            if i != 0 {
+                string.append("\n")
+            }
+            
+            let rowNodes = nodes[i]
+            var rowSb = ""
+            for node in rowNodes {
+                let leftSpace = (node?.x ?? 0) - rowSb.count - minX
+                rowSb.append(Strings.blank(length: leftSpace))
+                rowSb.append(node?.string ?? "")
+            }
+            
+            string.append(rowSb)
+        }
+        
+        return string
     }
-    
 }

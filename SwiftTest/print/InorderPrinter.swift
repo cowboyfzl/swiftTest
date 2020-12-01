@@ -29,33 +29,30 @@ import Foundation
  */
 private let length = 2
 class InorderPrinter : Printer {
-    var tree: BinaryTreeInfo
     private static var rightAppend = "┌" + Strings.repeatString(string: "-", count: length)
     private static var leftAppend = "└" + Strings.repeatString(string: "-", count: length)
     private static var blankAppend = Strings.blank(length: length + 1)
-    private static var lineAppend = "|" + Strings.blank(length: length)
-    
-    required init(tree: BinaryTreeInfo) {
-        self.tree = tree
+    private static var lineAppend = "│" + Strings.blank(length: length)
+    required override init(tree: BinaryTreeInfo) {
+        super.init(tree: tree)
     }
     
-    func printString() -> String {
-        var string = printStrings(node: tree.root(), nodePrefix: "", leftPrefix: "", rightPrefix: "")
-        string.removeLast(1)
+    override func printString() -> String {
+        var string = printStrings(node: tree.getRoot(), nodePrefix: "", leftPrefix: "", rightPrefix: "")
+        string.removeLast()
         return string
     }
     
     private func printStrings(node:AnyObject?, nodePrefix: String, leftPrefix: String, rightPrefix: String) -> String {
         let left = tree.left(node: node)
         let right = tree.right(node: node)
-        let string = tree.string(node: node) as? String
+        let string = tree.string(node: node)
         var length = string?.count ?? 0
         if length % 2 == 0 {
             length -= 1
         }
         
         length >>= 1
-        
         var nodeString = ""
         var rightPrefix = rightPrefix
         if right != nil {
@@ -63,12 +60,13 @@ class InorderPrinter : Printer {
             nodeString += printStrings(node: right, nodePrefix: rightPrefix + InorderPrinter.rightAppend, leftPrefix: rightPrefix + InorderPrinter.lineAppend, rightPrefix: rightPrefix + InorderPrinter.blankAppend)
         }
         
-        nodeString += nodePrefix + (string ?? "") + "\n"
+        nodeString += nodePrefix + (string ?? " ") + "\n"
         var leftPrefix = leftPrefix
         if left != nil {
             leftPrefix += Strings.blank(length: length)
             nodeString += printStrings(node: left, nodePrefix: leftPrefix + InorderPrinter.leftAppend, leftPrefix: leftPrefix + InorderPrinter.blankAppend, rightPrefix: leftPrefix + InorderPrinter.lineAppend)
         }
+        
         return nodeString
     }
     

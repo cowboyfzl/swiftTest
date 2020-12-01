@@ -28,6 +28,6 @@ class Strings {
             return ""
         }
         
-        return "%" + "\(length)" + "s"
+        return String(repeating: " ", count: length)
     }
 }

@@ -9,8 +9,8 @@
 import Foundation
 
 protocol BinaryTreeInfo {
-    func root() -> AnyObject?
+    func getRoot() -> AnyObject?
     func left(node:AnyObject?) -> AnyObject?
     func right(node:AnyObject?) -> AnyObject?
-    func string(node:AnyObject?) -> AnyObject?
+    func string(node:AnyObject?) -> String?
 }

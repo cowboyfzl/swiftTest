@@ -35,21 +35,9 @@ var aa = Person(a: 1)
 var bb = Person(a: 2)
 //workingClass.someFunc() // Outputs: "It worked!"
 
-var tree = BinarySearchTree<Person>()
-tree.add(elements: [Person(a: 1), Person(a: 2)])
-//struct HashMap <K, V> {
-//    private var _size = 0
-//    func size() -> Int {
-//        _size
-//    }
-//    
-//    func isEmpty() -> Bool {
-//        _size == 0
-//    }
-//    
-//    mutating func clear() {
-//        _size = 0
-//    }
-//}
+var tree = BinarySearchTree<Int>()
+tree.add(elements: [5, 1, 6, 7, 8, 9, 200, 100])
+BinaryTrees.println(tree: tree)
+
 
 
