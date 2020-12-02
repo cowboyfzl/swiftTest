@@ -198,11 +198,34 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface, BinaryTreeI
     
     /// 层序遍历（从上往下，从左往右依次访问）
     func levelOrderTraversal() {
-        var list = Array<E>()
-        
+        levelOrderTraversal(node: root)
     }
     
     private func levelOrderTraversal(node:Node?) {
+        var list = Array<Node>()
+        var nodes = Array<Node>()
+        var node = node
+        if let node = node {
+            list.append(node)
+        }
+        
+        while list.count > 0 {
+            if let left = node?.left {
+                list.append(left)
+            }
+            
+            if let right = node?.right {
+                list.append(right)
+            }
+            
+            let firstNode = list.removeFirst()
+            nodes.append(firstNode)
+            node = list.first
+        }
+        
+        for node in nodes {
+            print(node.element ?? "")
+        }
         
     }
 }

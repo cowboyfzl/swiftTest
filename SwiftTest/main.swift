@@ -33,6 +33,6 @@ var ee = Person(a: 4)
 var tree = BinarySearchTree<Int>()
 tree.add(elements: [7, 4, 9, 2, 5, 8, 11, 12, 1])
 BinaryTrees.println(tree: tree)
-tree.inorderTraversal(order: NodeOrder.Ascending)
+tree.levelOrderTraversal()
 
 
