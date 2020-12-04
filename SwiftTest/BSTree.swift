@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol  BinarySearchTreeInterface {
+protocol BinarySearchTreeInterface {
     associatedtype E : Comparable
     func size() -> Int
     func isEmpty() -> Bool;
@@ -16,6 +16,10 @@ protocol  BinarySearchTreeInterface {
     func remove(element: E)
     func contains(element: E)
     
+}
+
+protocol Visitor {
+    func vistor(e:Any)
 }
 
 enum NodeCompare : Int {
@@ -54,7 +58,6 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface, BinaryTreeI
         
         return ""
     }
-    
     
     private var _size:Int = 0;
     private var root:Node?
@@ -148,21 +151,83 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface, BinaryTreeI
         }
     }
     
-    
-    
-    /// 前序 （根、左、右）
-    func preorderTraversal() {
-        preorderTraversal(node: root ?? nil)
+    func levelOrder() -> [E] {
+         levelOrder {$0}
     }
     
-    private func preorderTraversal(node:Node?) {
+    func levelOrder(_ visitor: (E) -> E) -> [E] {
+        var list = Array<Node>()
+        var nodes = Array<Node>()
+        if let node = root {
+            list.append(node)
+        }
+        
+        while !list.isEmpty {
+            let firstNode = list.removeFirst()
+            firstNode.element = visitor(firstNode.element!)
+            if let left = firstNode.left {
+                list.append(left)
+            }
+            
+            if let right = firstNode.right {
+                list.append(right)
+            }
+            
+            nodes.append(firstNode)
+        }
+        
+        return nodes.map { (node) -> E in
+            node.element!
+        }
+    }
+    
+    /// 前序 （根、左、右）
+    func preorderTraversalOrder(_ visitor: (E, inout Bool) -> E) -> [E]? {
+       return preorderTraversal(visitor, node: root)
+    }
+    
+    private func preorderTraversal(_ visitor: (E, inout Bool) -> E, node:Node?) -> [E]? {
+        if node == nil {
+            return nil
+        }
+        
+        guard let node = node else { return nil}
+        var tempNodes = [Node]()
+        var tempNode:Node? = node
+        var results = [E]()
+        var stop = false;
+        while !tempNodes.isEmpty || tempNode != nil {
+            while tempNode != nil {
+                let changeElement = visitor(tempNode!.element!, &stop)
+                if stop {
+                    break
+                }
+                
+                tempNode?.element = changeElement;
+                results.append(changeElement)
+                tempNodes.append(tempNode!)
+                tempNode = tempNode?.left
+            }
+            
+            tempNode = tempNodes.popLast()
+            tempNode = tempNode?.right
+        }
+        
+        return results
+    }
+    
+    func per() {
+        per(node:root)
+    }
+    
+    private func per(node:Node?) {
         if node == nil {
             return
         }
         
-        print(node?.element ?? " ")
-        preorderTraversal(node: node?.left)
-        preorderTraversal(node: node?.right)
+        print(node?.element ?? "")
+        per(node: node?.left)
+        per(node: node?.right)
     }
     
     
@@ -196,36 +261,18 @@ class BinarySearchTree <E : Comparable> : BinarySearchTreeInterface, BinaryTreeI
         inorderTraversalDescending(node: node?.left)
     }
     
-    /// 层序遍历（从上往下，从左往右依次访问）
-    func levelOrderTraversal() {
-        levelOrderTraversal(node: root)
+    /// 后续遍历 (左、右、根)
+    func postorderTraversal() {
+        postorderTraversal(node: root)
     }
     
-    private func levelOrderTraversal(node:Node?) {
-        var list = Array<Node>()
-        var nodes = Array<Node>()
-        var node = node
-        if let node = node {
-            list.append(node)
+    private func postorderTraversal(node:Node?) {
+        if node == nil {
+            return
         }
         
-        while list.count > 0 {
-            if let left = node?.left {
-                list.append(left)
-            }
-            
-            if let right = node?.right {
-                list.append(right)
-            }
-            
-            let firstNode = list.removeFirst()
-            nodes.append(firstNode)
-            node = list.first
-        }
-        
-        for node in nodes {
-            print(node.element ?? "")
-        }
-        
+        postorderTraversal(node: node?.left)
+        postorderTraversal(node: node?.right)
+        print(node?.element ?? " ")
     }
 }

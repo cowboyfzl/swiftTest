@@ -15,12 +15,11 @@ struct Person : Comparable {
     }
 }
 
-class EmptyClass {
-
-    var someFunc:() ->() = { }
-
-    init(overrides: (EmptyClass) -> EmptyClass) {
-       _ = overrides(self)
+class EmptyClass : Visitor {
+    
+    func vistor(e: Any) {
+        var e = e as? Int
+        e! += 1;
     }
 }
 
@@ -31,8 +30,16 @@ var dd = Person(a: 5)
 var ee = Person(a: 4)
 
 var tree = BinarySearchTree<Int>()
-tree.add(elements: [7, 4, 9, 2, 5, 8, 11, 12, 1])
+tree.add(elements: [7, 4, 9, 2, 5, 8, 11, 13, 1, 12])
 BinaryTrees.println(tree: tree)
-tree.levelOrderTraversal()
+var index = 0
+var p = tree.preorderTraversalOrder { value, stop in
+    if index == 5 {
+        stop = true
+    }
+    index += 1;
+    return value
+    
+}
 
-
+print(p ?? "没有数据")
